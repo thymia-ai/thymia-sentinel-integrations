@@ -1,0 +1,13 @@
+.env
+livekit/.env.local
+!.env.example
+.DS_Store
+__pycache__
+.idea
+KMS
+livekit/.venv
+.vscode
+*.egg-info
+.pytest_cache
+.ruff_cache
+/livekit/venv/
