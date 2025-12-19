@@ -34,8 +34,6 @@ Send a CONFIG message as the first message after connecting:
   "date_of_birth": "1990-01-15",
   "birth_sex": "MALE",
   "language": "en-GB",
-  "buffer_duration": 60,
-  "min_speech_duration": 20,
   "biomarkers": ["helios"],
   "policies": ["passthrough"],
   "sample_rate": 16000,
