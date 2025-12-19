@@ -178,8 +178,6 @@ class Sentinel:
         date_of_birth: str,
         birth_sex: str,
         language: str = "en-GB",
-        buffer_duration: int = 60,
-        min_speech_duration: Optional[float] = 10,
         buffer_strategy: str = "simple_reset",
         policies: Optional[list[str]] = None,
         biomarkers: Optional[list[str]] = None,
@@ -197,8 +195,6 @@ class Sentinel:
             date_of_birth: Date of birth in YYYY-MM-DD format
             birth_sex: Either "MALE" or "FEMALE"
             language: Language code (default: "en-GB")
-            buffer_duration: Seconds of audio to analyze (default: 60)
-            min_speech_duration: Minimum seconds of speech required (optional)
             buffer_strategy: Buffer processing strategy (default: "simple_reset")
             on_policy_result: Optional callback for PolicyResult (POLICY_RESULT events)
             server_url: WebSocket server URL (default: from THYMIA_SERVER_URL env var)
@@ -208,8 +204,6 @@ class Sentinel:
         self.date_of_birth = date_of_birth
         self.birth_sex = birth_sex
         self.language = language
-        self.buffer_duration = buffer_duration
-        self.min_speech_duration = min_speech_duration
         self.buffer_strategy = buffer_strategy
         self.policies = policies if policies is not None else ["passthrough"]
         self.biomarkers = biomarkers if biomarkers is not None else ["helios"]
@@ -471,8 +465,6 @@ class Sentinel:
                     'date_of_birth': self.date_of_birth,
                     'birth_sex': self.birth_sex,
                     'language': self.language,
-                    'buffer_duration': self.buffer_duration,
-                    'min_speech_duration': self.min_speech_duration,
                     'buffer_strategy': self.buffer_strategy,
                     'biomarkers': self.biomarkers,
                     'policies': self.policies,
