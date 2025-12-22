@@ -127,8 +127,6 @@ The Sentinel automatically:
 | `date_of_birth` | `str` | required | YYYY-MM-DD format |
 | `birth_sex` | `str` | required | "MALE" or "FEMALE" |
 | `language` | `str` | `"en-GB"` | BCP-47 language code |
-| `buffer_duration` | `int` | `60` | Seconds of audio to buffer |
-| `min_speech_duration` | `float` | `10` | Min speech before analysis triggers |
 | `policies` | `list[str]` | `["passthrough"]` | Which policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Which biomarker providers to use |
 | `on_policy_result` | `callable` | `None` | Callback for results |

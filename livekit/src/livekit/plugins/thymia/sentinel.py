@@ -143,15 +143,16 @@ class Sentinel:
 ```python
         from livekit.plugins import thymia
 
-        async def handle_result(result: thymia.ReasonerResult):
-            classification = result['classification']
-            print(f"Risk Level: {classification['level']}, Alert: {classification['alert']}")
+        async def handle_policy_result(result: thymia.PolicyResult):
+            policy = result.get('policy')
+            policy_result = result.get('result', {})
+            print(f"Policy '{policy}' result: {policy_result}")
 
         sentinel = thymia.Sentinel(
             user_label="user-123",
             date_of_birth="1990-01-01",
             birth_sex="MALE",
-            on_policy_result=handle_result,
+            on_policy_result=handle_policy_result,
         )
 
         await sentinel.start(ctx, session)
@@ -178,8 +179,6 @@ class Sentinel:
         date_of_birth: str,
         birth_sex: str,
         language: str = "en-GB",
-        buffer_duration: int = 60,
-        min_speech_duration: Optional[float] = 10,
         buffer_strategy: str = "simple_reset",
         policies: Optional[list[str]] = None,
         biomarkers: Optional[list[str]] = None,
@@ -197,8 +196,6 @@ class Sentinel:
             date_of_birth: Date of birth in YYYY-MM-DD format
             birth_sex: Either "MALE" or "FEMALE"
             language: Language code (default: "en-GB")
-            buffer_duration: Seconds of audio to analyze (default: 60)
-            min_speech_duration: Minimum seconds of speech required (optional)
             buffer_strategy: Buffer processing strategy (default: "simple_reset")
             on_policy_result: Optional callback for PolicyResult (POLICY_RESULT events)
             server_url: WebSocket server URL (default: from THYMIA_SERVER_URL env var)
@@ -208,8 +205,6 @@ class Sentinel:
         self.date_of_birth = date_of_birth
         self.birth_sex = birth_sex
         self.language = language
-        self.buffer_duration = buffer_duration
-        self.min_speech_duration = min_speech_duration
         self.buffer_strategy = buffer_strategy
         self.policies = policies if policies is not None else ["passthrough"]
         self.biomarkers = biomarkers if biomarkers is not None else ["helios"]
@@ -341,61 +336,6 @@ class Sentinel:
             except Exception as e:
                 logger.warning(f"Could not register {event_name}: {e}")
 
-    def _log_result(self, message: dict):
-        """Log reasoner safety assessment result"""
-        logger.info("=" * 60)
-        logger.info("RESULT")
-        logger.info("=" * 60)
-
-        # Metadata
-        logger.info(f"  segment: {message.get('segment_number')} | type: {message.get('analysis_type')} | turns: {message.get('user_turn_count')}")
-
-        # Classification
-        classification = message.get('classification', {})
-        logger.info(f"  level: {classification.get('level')} | alert: {classification.get('alert')} | confidence: {classification.get('confidence')}")
-
-        # Concerns
-        concerns = message.get('concerns', [])
-        if concerns:
-            logger.info(f"  concerns: {concerns}")
-
-        # Rationale
-        rationale = message.get('rationale', '')
-        if rationale:
-            logger.info(f"  rationale: {rationale[:200]}{'...' if len(rationale) > 200 else ''}")
-
-        # Biomarkers
-        biomarkers = message.get('biomarker_summary')
-        if biomarkers:
-            scores = []
-            for key in ['distress', 'stress', 'burnout', 'fatigue', 'low_self_esteem']:
-                if biomarkers.get(key) is not None:
-                    scores.append(f"{key}={biomarkers[key]:.2f}")
-            if scores:
-                logger.info(f"  biomarkers: {', '.join(scores)}")
-
-        # Context
-        context = message.get('conversation_context')
-        if context:
-            topics = context.get('topics', [])
-            logger.info(f"  context: mood_discussed={context.get('mood_discussed')} | topics={topics} | insight={context.get('user_insight')}")
-
-        # Flags
-        flags = message.get('flags', {})
-        active = [k for k, v in flags.items() if v]
-        if active:
-            logger.info(f"  flags: {active}")
-
-        # Actions
-        actions = message.get('recommended_actions', {})
-        logger.info(f"  urgency: {actions.get('urgency', 'routine')}")
-        if actions.get('for_agent'):
-            logger.info(f"  for_agent: {actions['for_agent']}")
-        if actions.get('for_human_reviewer'):
-            logger.info(f"  for_reviewer: {actions['for_human_reviewer']}")
-
-        logger.info("=" * 60)
-
     def _log_policy_result(self, message: dict):
         """Log policy execution result"""
         logger.info("=" * 60)
@@ -471,8 +411,6 @@ class Sentinel:
                     'date_of_birth': self.date_of_birth,
                     'birth_sex': self.birth_sex,
                     'language': self.language,
-                    'buffer_duration': self.buffer_duration,
-                    'min_speech_duration': self.min_speech_duration,
                     'buffer_strategy': self.buffer_strategy,
                     'biomarkers': self.biomarkers,
                     'policies': self.policies,
