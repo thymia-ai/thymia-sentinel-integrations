@@ -119,7 +119,7 @@ The server sends back `POLICY_RESULT` messages containing biomarkers and analysi
 | Integration | User Audio | Agent Audio | Multi-Participant | Policy Results |
 |-------------|:----------:|:-----------:|:-----------------:|:--------------:|
 | [LiveKit](./livekit/README.md) | ✅ | ✅ | 🚫 | ✅ |
-| [Gemini Live API](./live_api/README.md) | ✅ | ✅ | 🚫 | ✅ |
+| [Gemini Live API](./gemini_live/README.md) | ✅ | ✅ | 🚫 | ✅ |
 
 ### Other Frameworks
 

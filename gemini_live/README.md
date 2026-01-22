@@ -113,7 +113,7 @@ await sentinel.close()
 ## Project Structure
 
 ```
-live_api/
+gemini_live/
 ├── src/
 │   ├── agent.py           # Example agent with Sentinel
 │   ├── prompts.py         # Agent system prompts
