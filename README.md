@@ -116,25 +116,10 @@ The server sends back `POLICY_RESULT` messages containing biomarkers and analysi
 
 ## Example Integrations
 
-### LiveKit (Available Now)
-
-The `livekit/` folder contains a working integration for [LiveKit Agents](https://docs.livekit.io/agents/). This demonstrates:
-
-- Streaming both user and agent audio tracks
-- Capturing transcripts and conversation events
-- Receiving policy results and adapting agent behavior
-
-See [livekit/README.md](./livekit/README.md) for setup instructions.
-
-### Gemini Live API
-
-The `live_api/` folder contains an integration for [Google Gemini Live API](https://ai.google.dev/gemini-api/docs/live). This demonstrates:
-
-- Streaming microphone audio to both Gemini and Thymia
-- Capturing Gemini's native audio transcriptions
-- Handling real-time audio playback with biomarker monitoring
-
-See [live_api/README.md](./live_api/README.md) for setup instructions.
+| Integration | User Audio | Agent Audio | Multi-Participant | Policy Results |
+|-------------|:----------:|:-----------:|:-----------------:|:--------------:|
+| [LiveKit](./livekit/README.md) | ✅ | ✅ | 🚫 | ✅ |
+| [Gemini Live API](./live_api/README.md) | ✅ | ✅ | 🚫 | ✅ |
 
 ### Other Frameworks
 

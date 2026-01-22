@@ -4,7 +4,9 @@ An example integration of Thymia Sentinel with [Google Gemini Live API](https://
 
 ## About This Example
 
-This integration shows how Thymia Sentinel can be added to a Gemini Live API voice agent. The example is currently configured to:
+This integration shows how Thymia Sentinel can be added to a Gemini Live API voice agent. The agent code is adapted from Google's [Microphone streaming example](https://ai.google.dev/gemini-api/docs/live?example=mic-stream#get-started).
+
+The example is currently configured to:
 
 - Stream user and agent audio to Thymia's servers
 - Use the **passthrough** policy with **Helios** biomarkers
