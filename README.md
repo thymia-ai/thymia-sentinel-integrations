@@ -126,6 +126,16 @@ The `livekit/` folder contains a working integration for [LiveKit Agents](https:
 
 See [livekit/README.md](./livekit/README.md) for setup instructions.
 
+### Gemini Live API
+
+The `live_api/` folder contains an integration for [Google Gemini Live API](https://ai.google.dev/gemini-api/docs/live). This demonstrates:
+
+- Streaming microphone audio to both Gemini and Thymia
+- Capturing Gemini's native audio transcriptions
+- Handling real-time audio playback with biomarker monitoring
+
+See [live_api/README.md](./live_api/README.md) for setup instructions.
+
 ### Other Frameworks
 
 If you're using a different voice agent framework and would like to integrate with Thymia Sentinel, the protocol above describes everything you need. We welcome contributions of new integrations!
