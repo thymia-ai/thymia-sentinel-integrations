@@ -54,7 +54,7 @@ SAMPLE_RATE = 16000
 
 
 class UserInputProcessor(FrameProcessor):
-    """Captures user audio before STT consumes it."""
+    """Captures user audio."""
 
     def __init__(self, sentinel_instance: thymia.Sentinel):
         super().__init__()
@@ -75,7 +75,7 @@ class UserInputProcessor(FrameProcessor):
 
 
 class AgentOutputProcessor(FrameProcessor):
-    """Captures agent audio, transcripts, and user transcripts after STT."""
+    """Captures agent audio."""
 
     def __init__(self, sentinel_instance: thymia.Sentinel):
         super().__init__()

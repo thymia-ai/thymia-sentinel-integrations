@@ -37,11 +37,14 @@ Remember: Your primary goal is to be helpful and supportive while following safe
 
 
 def format_action_update(base_prompt: str, action: str) -> str:
-    """Format the prompt update when a recommended action is received."""
+    """Format the prompt update when a recommended action is received.
+
+    Use this when you need to replace/update the full system prompt with the action appended.
+    """
     return f"""{base_prompt}
 
 ---
-⚠️ PRIORITY ACTION REQUIRED ⚠️
+PRIORITY ACTION REQUIRED
 
 The safety system has analyzed this conversation and determined you should:
 
@@ -51,3 +54,17 @@ You MUST incorporate this guidance into your very next response.
 Do not ignore this instruction.
 ---
 """
+
+
+def format_action_message(action: str) -> str:
+    """Format a standalone action message to inject into a conversation.
+
+    Use this when the system prompt is already set and you just need to inject
+    the action as a message. For Gemini Live, this is sent via send_client_content.
+    """
+    return f"""[PRIORITY ACTION FROM SAFETY SYSTEM]
+The safety monitoring system has analyzed this conversation and requires you to:
+
+{action}
+
+You MUST follow this guidance in your very next response. This takes priority over your normal conversational flow."""

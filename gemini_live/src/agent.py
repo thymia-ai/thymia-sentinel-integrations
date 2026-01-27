@@ -21,7 +21,7 @@ logger.add(sys.stderr, level=os.getenv("LOG_LEVEL", "INFO"))
 
 
 import thymia
-from prompts import SYSTEM_PROMPT, format_action_update
+from prompts import SYSTEM_PROMPT, format_action_message
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
@@ -60,16 +60,17 @@ async def apply_recommended_action(action: str) -> None:
         logger.warning("Cannot apply action - no active session")
         return
 
-    updated_instructions = format_action_update(SYSTEM_PROMPT, action)
-
     logger.info("=" * 60)
     logger.info("APPLYING RECOMMENDED ACTION")
     logger.info(f"Action: {action}")
     logger.info("=" * 60)
 
+    # Inject just the action as context (system prompt is already set)
+    action_message = format_action_message(action)
+
     try:
         await live_session.send_client_content(
-            turns=[{"role": "user", "parts": [{"text": updated_instructions}]}],
+            turns=[{"role": "user", "parts": [{"text": action_message}]}],
             turn_complete=True,
         )
         logger.info("Action injected into Gemini session")
