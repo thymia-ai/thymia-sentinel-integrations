@@ -21,7 +21,7 @@ logger.add(sys.stderr, level=os.getenv("LOG_LEVEL", "INFO"))
 
 
 import thymia
-from prompts import SYSTEM_PROMPT
+from prompts import SYSTEM_PROMPT, format_action_update
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
@@ -48,6 +48,33 @@ audio_stream = None
 
 # Global sentinel reference
 sentinel: thymia.Sentinel = None
+# Global session reference for context updates
+live_session = None
+
+
+async def apply_recommended_action(action: str) -> None:
+    """Apply a recommended action by injecting guidance into the Gemini session."""
+    global live_session
+
+    if not live_session:
+        logger.warning("Cannot apply action - no active session")
+        return
+
+    updated_instructions = format_action_update(SYSTEM_PROMPT, action)
+
+    logger.info("=" * 60)
+    logger.info("APPLYING RECOMMENDED ACTION")
+    logger.info(f"Action: {action}")
+    logger.info("=" * 60)
+
+    try:
+        await live_session.send_client_content(
+            turns=[{"role": "user", "parts": [{"text": updated_instructions}]}],
+            turn_complete=True,
+        )
+        logger.info("Action injected into Gemini session")
+    except Exception as e:
+        logger.error(f"Failed to inject action: {e}")
 
 
 async def listen_audio():
@@ -171,7 +198,7 @@ async def run():
                 actions = inner_result.get('recommended_actions', {})
                 for_agent = actions.get('for_agent', '')
                 if for_agent:
-                    logger.info(f"   Recommended: {for_agent}")
+                    await apply_recommended_action(for_agent)
 
             # Handle field extraction results
             elif result_type == 'extracted_fields':
@@ -195,19 +222,21 @@ async def run():
 
         async with client.aio.live.connect(
             model=MODEL, config=CONFIG
-        ) as live_session:
+        ) as session:
+            global live_session
+            live_session = session
             logger.info("Connected to Gemini!")
 
             # Send initial greeting
-            await live_session.send_client_content(
+            await session.send_client_content(
                 turns=[{"role": "user", "parts": [{"text": "Say hello and introduce yourself briefly."}]}],
                 turn_complete=True,
             )
 
             async with asyncio.TaskGroup() as tg:
-                tg.create_task(send_realtime(live_session))
+                tg.create_task(send_realtime(session))
                 tg.create_task(listen_audio())
-                tg.create_task(receive_audio(live_session))
+                tg.create_task(receive_audio(session))
                 tg.create_task(play_audio())
 
     except asyncio.CancelledError:
