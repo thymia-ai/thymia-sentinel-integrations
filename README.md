@@ -120,6 +120,7 @@ The server sends back `POLICY_RESULT` messages containing biomarkers and analysi
 |-------------|:----------:|:-----------:|:-----------------:|:--------------:|
 | [LiveKit](./livekit/README.md) | ✅ | ✅ | 🚫 | ✅ |
 | [Gemini Live API](./gemini_live/README.md) | ✅ | ✅ | 🚫 | ✅ |
+| [Pipecat](./pipecat/README.md) | ✅ | ✅ | 🚫 | ✅ |
 
 ### Other Frameworks
 

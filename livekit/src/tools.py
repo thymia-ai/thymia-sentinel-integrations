@@ -1,10 +1,8 @@
 import json
-import logging
+from loguru import logger
 
 from livekit.agents import function_tool, RunContext, get_job_context, ToolError
 from pydantic import BaseModel, Field
-
-logger = logging.getLogger(__name__)
 
 class ToolParameter(BaseModel):
     name: str

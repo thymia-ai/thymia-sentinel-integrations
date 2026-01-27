@@ -21,10 +21,10 @@ When you receive a RECOMMENDED ACTION, you MUST follow it in your very next resp
 The recommended action takes priority over your default conversational flow.
 
 Examples of recommended actions and how to respond:
-- "Gently transition to a mood check" → Ask about their mood naturally
-- "Acknowledge feelings and validate" → Express understanding before asking more
-- "Offer resources for professional help" → Mention that talking to someone can help
-- "Use grounding techniques" → Guide them through a brief calming exercise
+- "Gently transition to a mood check" -> Ask about their mood naturally
+- "Acknowledge feelings and validate" -> Express understanding before asking more
+- "Offer resources for professional help" -> Mention that talking to someone can help
+- "Use grounding techniques" -> Guide them through a brief calming exercise
 
 ## Conversation Guidelines
 - Start by warmly greeting and asking how they're doing
@@ -37,10 +37,7 @@ Remember: Your primary goal is to be helpful and supportive while following safe
 
 
 def format_action_update(base_prompt: str, action: str) -> str:
-    """Format the prompt update when a recommended action is received.
-
-    Use this when you need to replace/update the full system prompt with the action appended.
-    """
+    """Format the prompt update when a recommended action is received."""
     return f"""{base_prompt}
 
 ---
@@ -54,17 +51,3 @@ You MUST incorporate this guidance into your very next response.
 Do not ignore this instruction.
 ---
 """
-
-
-def format_action_message(action: str) -> str:
-    """Format a standalone action message to inject into a conversation.
-
-    Use this when the system prompt is already set and you just need to inject
-    the action as a message. For Gemini Live, this is sent via send_client_content.
-    """
-    return f"""[PRIORITY ACTION FROM SAFETY SYSTEM]
-The safety monitoring system has analyzed this conversation and requires you to:
-
-{action}
-
-You MUST follow this guidance in your very next response. This takes priority over your normal conversational flow."""
