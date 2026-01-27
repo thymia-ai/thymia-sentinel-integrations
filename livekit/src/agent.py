@@ -4,16 +4,17 @@ Safety-Aware Agent with Thymia Sentinel
 The agent receives safety assessments from the Sentinel and adapts its behavior accordingly.
 """
 import json
-import logging
 import os
 import sys
 from dotenv import load_dotenv
 
 load_dotenv(".env.local")
 
-from loguru import logger as loguru_logger
-loguru_logger.remove()
-loguru_logger.add(sys.stderr, level=os.getenv("LOG_LEVEL", "INFO"))
+from loguru import logger
+
+# Logging configuration
+logger.remove()
+logger.add(sys.stderr, level=os.getenv("LOG_LEVEL", "INFO"))
 
 from livekit.agents import (
     Agent,
@@ -30,8 +31,6 @@ from livekit.plugins import noise_cancellation, deepgram, rime, openai, thymia, 
 from tools import get_tools_from_config, AgentConfig
 
 from prompts import SYSTEM_PROMPT, format_action_update
-
-logger = logging.getLogger("agent")
 
 
 class SafetyAwareAssistant(Agent):

@@ -4,23 +4,24 @@ Gemini Live API Agent with Thymia Sentinel
 A voice agent using Google's Gemini Live API with real-time biomarker monitoring via Thymia Sentinel.
 """
 import asyncio
-import logging
 import sys
 import os
+from dotenv import load_dotenv
+
+load_dotenv(".env.local")
 
 from google import genai
 import pyaudio
-from dotenv import load_dotenv
-from loguru import logger as loguru_logger
 
-loguru_logger.remove()
-loguru_logger.add(sys.stderr, level=os.getenv("LOG_LEVEL", "INFO"))
-load_dotenv(".env.local")
+from loguru import logger
+
+# Logging configuration
+logger.remove()
+logger.add(sys.stderr, level=os.getenv("LOG_LEVEL", "INFO"))
+
 
 import thymia
 from prompts import SYSTEM_PROMPT
-
-logger = logging.getLogger("agent")
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
