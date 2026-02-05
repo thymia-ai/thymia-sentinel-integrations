@@ -38,7 +38,11 @@ Send a CONFIG message as the first message after connecting:
   "policies": ["passthrough"],
   "sample_rate": 16000,
   "format": "pcm16",
-  "channels": 1
+  "channels": 1,
+  "progress_updates": {
+    "enabled": true,
+    "interval_seconds": 1.0
+  }
 }
 ```
 
@@ -97,6 +101,29 @@ The server sends back `POLICY_RESULT` messages containing biomarkers and analysi
   }
 }
 ```
+
+### 6. Receive Progress Updates (Optional)
+
+If `progress_updates.enabled` is set to `true` in the configuration, the server sends periodic `PROGRESS` messages indicating the status of biomarker processing:
+
+```json
+{
+  "type": "PROGRESS",
+  "timestamp": 1701234567.89,
+  "biomarkers": {
+    "helios": {
+      "speech_seconds": 12.5,
+      "trigger_seconds": 15.0,
+      "processing": false
+    }
+  }
+}
+```
+
+Progress updates are useful for:
+- Showing users how much speech has been collected
+- Indicating when biomarker analysis is in progress
+- Building progress indicators in your UI
 
 ## Available Biomarkers
 

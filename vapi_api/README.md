@@ -108,12 +108,20 @@ Speak into your microphone to interact with the assistant.
 In `agent.py`, you can configure which policies and biomarkers to use:
 
 ```python
+# Optional: handle progress updates
+async def handle_progress_result(result: thymia.ProgressResult):
+    timestamp = result.get('timestamp', 0.0)
+    biomarkers = result.get('biomarkers', {})
+    for name, progress in biomarkers.items():
+        print(f"{name}: {progress.get('speech_seconds', 0):.1f}s speech collected")
+
 sentinel = thymia.Sentinel(
     user_label="unique-user-id",
     date_of_birth="1990-01-01",
     birth_sex="MALE",
     language="en-GB",
     on_policy_result=handle_policy_result,
+    on_progress_result=handle_progress_result,  # Optional: receive progress updates if this is defined, defaults to None
     policies=["passthrough"],  # Options: passthrough, safety_analysis, field_extraction, agent_eval
     biomarkers=["helios"]      # Options: helios, apollo
 )

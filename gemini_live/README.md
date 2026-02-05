@@ -61,7 +61,7 @@ The agent will start listening on your default microphone and speaking through y
 Adding Sentinel to your Gemini Live API agent requires minimal changes:
 
 ```python
-from thymia import Sentinel
+from thymia import Sentinel, ProgressResult
 
 # Define a callback for policy results
 async def handle_policy_result(result):
@@ -73,12 +73,20 @@ async def handle_policy_result(result):
         print(f"Stress: {biomarkers.get('stress')}")
         print(f"Distress: {biomarkers.get('distress')}")
 
+# Define a callback for progress updates (optional)
+async def handle_progress_result(result: ProgressResult):
+    timestamp = result.get('timestamp', 0.0)
+    biomarkers = result.get('biomarkers', {})
+    for name, progress in biomarkers.items():
+        print(f"{name}: {progress.get('speech_seconds', 0):.1f}s speech collected")
+
 # Create the Sentinel
 sentinel = Sentinel(
     user_label="user-123",
     date_of_birth="1990-01-01",
     birth_sex="MALE",
     on_policy_result=handle_policy_result,
+    on_progress_result=handle_progress_result,  # Optional: receive progress updates if this is defined, defaults to None
     policies=["passthrough"],      # or ["safety_analysis", "field_extraction"]
     biomarkers=["helios"],         # or ["helios", "apollo"]
 )
@@ -106,7 +114,9 @@ await sentinel.close()
 | `language` | `str` | `"en-GB"` | BCP-47 language code |
 | `policies` | `list[str]` | `["passthrough"]` | Which policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Which biomarker providers to use |
-| `on_policy_result` | `callable` | `None` | Callback for results |
+| `on_policy_result` | `callable` | `None` | Callback for policy results |
+| `on_progress_result` | `callable` | `None` | Callback for progress updates |
+| `progress_updates_frequency` | `float` | `1.0` | Progress update interval in seconds |
 | `server_url` | `str` | env var | WebSocket server URL |
 | `api_key` | `str` | env var | Thymia API key |
 
