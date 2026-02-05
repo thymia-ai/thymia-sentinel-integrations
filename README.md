@@ -120,6 +120,29 @@ If `progress_updates.enabled` is set to `true` in the configuration, the server 
 }
 ```
 
+Each biomarker in the `biomarkers` object reports:
+- `speech_seconds`: Amount of user speech collected so far
+- `trigger_seconds`: Speech required before analysis runs
+- `processing`: Whether analysis is currently in progress
+
+**Multiple biomarker runs per call**: Biomarkers run multiple times during a conversation. When `speech_seconds` reaches `trigger_seconds`, analysis is triggered and the counter resets.
+
+Below is an example stream showing this cycle (with `trigger_seconds: 10`):
+
+```
+PROGRESS: helios - 3.2s / 10.0s collected, processing: false
+PROGRESS: helios - 6.5s / 10.0s collected, processing: false
+PROGRESS: helios - 9.8s / 10.0s collected, processing: false
+PROGRESS: helios - 10.0s / 10.0s collected, processing: true   ← Analysis triggered - processing changes to true
+POLICY_RESULT: helios biomarkers received (stress: 0.62, distress: 0.45, ...)
+PROGRESS: helios - 0.0s / 10.0s collected, processing: false   ← Counter reset
+PROGRESS: helios - 4.2s / 10.0s collected, processing: false
+PROGRESS: helios - 7.8s / 10.0s collected, processing: false
+... cycle continues ...
+```
+
+Note this is for illustration only, and assumes a larger `interval_seconds` value than the default of 1.0 seconds.
+
 Progress updates are useful for:
 - Showing users how much speech has been collected
 - Indicating when biomarker analysis is in progress
