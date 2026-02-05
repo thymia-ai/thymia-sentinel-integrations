@@ -143,6 +143,17 @@ async def entrypoint(ctx: JobContext):
             if extracted:
                 logger.info(f"   Extracted: {extracted}")
 
+
+    async def handle_progress_result(result: thymia.ProgressResult):
+        # Forward progress result to UI via data channel
+        await ctx.room.local_participant.publish_data(
+            payload=json.dumps(result).encode("utf-8"),
+            topic="thymia-progress-result",
+        )
+        timestamp = result.get('timestamp', 0.0)
+        biomarkers = result.get('biomarkers', {})
+        logger.info(f"Progress at {timestamp}:: biomarkers={biomarkers}")
+
     sentinel = thymia.Sentinel(
         user_label="550e8400-e29b-41d4-a716-446655440000",
         date_of_birth="1990-01-01",
@@ -150,7 +161,8 @@ async def entrypoint(ctx: JobContext):
         language="en-GB",
         on_policy_result=handle_policy_result,
         policies=["passthrough"], # ["passthrough", "field_extraction", "safety_analysis", "agent_eval"]
-        biomarkers=["helios"] # ["helios", "apollo"]
+        biomarkers=["helios"], # ["helios", "apollo"]
+        on_progress_result=handle_progress_result,
     )
 
     # Pass both ctx and session - Sentinel handles everything else
