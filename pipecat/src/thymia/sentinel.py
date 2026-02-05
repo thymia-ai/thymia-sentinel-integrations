@@ -129,6 +129,19 @@ class PolicyResult(TypedDict, total=False):
     # Policy-specific result - structure varies by policy type
     result: dict
 
+
+class BiomarkerProgress(TypedDict, total=False):
+    speech_seconds: float
+    trigger_seconds: float
+    processing: bool
+
+
+class ProgressResult(TypedDict, total=False):
+    type: Literal["PROGRESS"]
+    biomarkers: dict[str, BiomarkerProgress]
+    timestamp: float
+
+
 class Sentinel:
     """
     Thymia Sentinel for Pipecat - Monitors audio for mental wellness indicators.
@@ -171,6 +184,10 @@ class Sentinel:
         on_policy_result: Optional[
             Union[Callable[[PolicyResult], None], Callable[[PolicyResult], Awaitable[None]]]
         ] = None,
+        on_progress_result: Optional[
+            Union[Callable[[ProgressResult], None], Callable[[ProgressResult], Awaitable[None]]]
+        ] = None,
+        progress_updates_frequency: float = 1.0,
         server_url: Optional[str] = None,
         api_key: Optional[str] = None,
     ):
@@ -182,6 +199,8 @@ class Sentinel:
         self.policies = policies if policies is not None else ["passthrough"]
         self.biomarkers = biomarkers if biomarkers is not None else ["helios"]
         self.on_policy_result = on_policy_result
+        self.on_progress_result = on_progress_result
+        self.progress_updates_frequency = progress_updates_frequency
         self.server_url = server_url or os.getenv(
             "THYMIA_SERVER_URL",
             "wss://ws.thymia.ai"
@@ -215,6 +234,10 @@ class Sentinel:
             'biomarkers': self.biomarkers,
             'policies': self.policies,
             'sample_rate': SAMPLE_RATE,
+            'progress_updates': {
+                'enabled': True if self.on_progress_result is not None else False,
+                'interval_seconds': self.progress_updates_frequency
+            },
             'format': 'pcm16',
             'channels': 1
         }
@@ -258,6 +281,16 @@ class Sentinel:
                                 self.on_policy_result(message)
                         except Exception as e:
                             logger.error(f"Error in on_policy_result callback: {e}")
+
+                elif event_type == 'PROGRESS':
+                    if self.on_progress_result:
+                        try:
+                            if asyncio.iscoroutinefunction(self.on_progress_result):
+                                await self.on_progress_result(message)
+                            else:
+                                self.on_progress_result(message)
+                        except Exception as e:
+                            logger.error(f"Error in on_progress_result callback: {e}")
 
                 else:
                     logger.debug(f"Server message: {event_type}")

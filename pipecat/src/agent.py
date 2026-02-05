@@ -174,6 +174,11 @@ async def bot(runner_args):
             if extracted:
                 logger.info(f"   Extracted: {extracted}")
 
+    async def handle_progress_result(result: thymia.ProgressResult):
+        timestamp = result.get('timestamp', 0.0)
+        biomarkers = result.get('biomarkers', {})
+        logger.info(f"Progress at {timestamp}: biomarkers={biomarkers}")
+
     sentinel = thymia.Sentinel(
         user_label="550e8400-e29b-41d4-a716-446655440000",
         date_of_birth="1990-01-01",
@@ -181,7 +186,8 @@ async def bot(runner_args):
         language="en-GB",
         on_policy_result=handle_policy_result,
         policies=["passthrough"],  # ["passthrough", "field_extraction", "safety_analysis", "agent_eval"]
-        biomarkers=["helios"]  # ["helios", "apollo"]
+        biomarkers=["helios"],  # ["helios", "apollo"]
+        on_progress_result=handle_progress_result,
     )
 
     # Connect to Thymia server

@@ -141,13 +141,21 @@ pipeline = Pipeline([
 For non-Pipecat integrations, you can use the Sentinel API directly:
 
 ```python
-from thymia import Sentinel
+from thymia import Sentinel, ProgressResult
+
+# Optional: handle progress updates
+async def handle_progress_result(result: ProgressResult):
+    timestamp = result.get('timestamp', 0.0)
+    biomarkers = result.get('biomarkers', {})
+    for name, progress in biomarkers.items():
+        print(f"{name}: {progress.get('speech_seconds', 0):.1f}s speech collected")
 
 sentinel = Sentinel(
     user_label="user-123",
     date_of_birth="1990-01-01",
     birth_sex="MALE",
     on_policy_result=handle_policy_result,
+    on_progress_result=handle_progress_result,  # Optional: receive progress updates if this is defined, defaults to None
 )
 await sentinel.connect()
 
@@ -171,7 +179,9 @@ await sentinel.close()
 | `language` | `str` | `"en-GB"` | BCP-47 language code |
 | `policies` | `list[str]` | `["passthrough"]` | Which policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Which biomarker providers to use |
-| `on_policy_result` | `callable` | `None` | Callback for results |
+| `on_policy_result` | `callable` | `None` | Callback for policy results |
+| `on_progress_result` | `callable` | `None` | Callback for progress updates |
+| `progress_updates_frequency` | `float` | `1.0` | Progress update interval in seconds |
 | `buffer_strategy` | `str` | `"simple_reset"` | Audio buffering strategy |
 | `server_url` | `str` | env var | WebSocket server URL |
 | `api_key` | `str` | env var | Thymia API key |

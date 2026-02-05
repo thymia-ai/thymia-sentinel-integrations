@@ -38,7 +38,11 @@ Send a CONFIG message as the first message after connecting:
   "policies": ["passthrough"],
   "sample_rate": 16000,
   "format": "pcm16",
-  "channels": 1
+  "channels": 1,
+  "progress_updates": {
+    "enabled": true,
+    "interval_seconds": 1.0
+  }
 }
 ```
 
@@ -97,6 +101,52 @@ The server sends back `POLICY_RESULT` messages containing biomarkers and analysi
   }
 }
 ```
+
+### 6. Receive Progress Updates (Optional)
+
+If `progress_updates.enabled` is set to `true` in the configuration, the server sends periodic `PROGRESS` messages indicating the status of biomarker processing:
+
+```json
+{
+  "type": "PROGRESS",
+  "timestamp": 1701234567.89,
+  "biomarkers": {
+    "helios": {
+      "speech_seconds": 12.5,
+      "trigger_seconds": 15.0,
+      "processing": false
+    }
+  }
+}
+```
+
+Each biomarker in the `biomarkers` object reports:
+- `speech_seconds`: Amount of user speech collected so far
+- `trigger_seconds`: Speech required before analysis runs
+- `processing`: Whether analysis is currently in progress
+
+**Multiple biomarker runs per call**: Biomarkers run multiple times during a conversation. When `speech_seconds` reaches `trigger_seconds`, analysis is triggered and the counter resets.
+
+Below is an example stream showing this cycle (with `trigger_seconds: 10`):
+
+```
+PROGRESS: helios - 3.2s / 10.0s collected, processing: false
+PROGRESS: helios - 6.5s / 10.0s collected, processing: false
+PROGRESS: helios - 9.8s / 10.0s collected, processing: false
+PROGRESS: helios - 10.0s / 10.0s collected, processing: true   ← Analysis triggered - processing changes to true
+POLICY_RESULT: helios biomarkers received (stress: 0.62, distress: 0.45, ...)
+PROGRESS: helios - 0.0s / 10.0s collected, processing: false   ← Counter reset
+PROGRESS: helios - 4.2s / 10.0s collected, processing: false
+PROGRESS: helios - 7.8s / 10.0s collected, processing: false
+... cycle continues ...
+```
+
+Note this is for illustration only, and assumes a larger `interval_seconds` value than the default of 1.0 seconds.
+
+Progress updates are useful for:
+- Showing users how much speech has been collected
+- Indicating when biomarker analysis is in progress
+- Building progress indicators in your UI
 
 ## Available Biomarkers
 

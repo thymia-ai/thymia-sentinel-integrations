@@ -14,6 +14,7 @@ from .sentinel import (
     ReasonerFlags,
     ReasonerRecommendedActions,
     PolicyResult,
+    ProgressResult,
 )
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "ReasonerFlags",
     "ReasonerRecommendedActions",
     "PolicyResult",
+    "ProgressResult",
 ]
