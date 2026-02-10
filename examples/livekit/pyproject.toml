@@ -18,6 +18,7 @@ dependencies = [
     "livekit-plugins-rime>=1.2.15",
     "numpy>=2.0.2",
     "python-dotenv",
+    "loguru>=0.7.3",
 ]
 
 [tool.uv.sources]

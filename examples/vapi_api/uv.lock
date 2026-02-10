@@ -378,26 +378,17 @@ wheels = [
 [[package]]
 name = "thymia-sentinel"
 version = "1.0.0"
-source = { editable = "../../packages/thymia-sentinel" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "loguru" },
     { name = "pydantic" },
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "websockets" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "loguru", specifier = ">=0.7.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0" },
-    { name = "pydantic", specifier = ">=2.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.21" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'", specifier = ">=4.0" },
-    { name = "websockets", specifier = ">=12.0" },
+sdist = { url = "https://files.pythonhosted.org/packages/25/8e/8756d632166c3895eb8c0447105cda2636c7d82405e6d638679549d135d0/thymia_sentinel-1.0.0.tar.gz", hash = "sha256:80366c307ae3a51faf81de66c8914cb3c88306696f25551d19f6f059bfb71f06", size = 9587, upload-time = "2026-02-10T13:10:55.25Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5e/0a/577bb64761aab010cb5bb2124fe4a2090d4acb8bd3d7558b983d1ce9d8e0/thymia_sentinel-1.0.0-py3-none-any.whl", hash = "sha256:df46d21bce618ddc4c59fcb7fb1aabdbefeae23294cabc195d4a3619b1612c0e", size = 11410, upload-time = "2026-02-10T13:10:54.262Z" },
 ]
-provides-extras = ["dev"]
 
 [[package]]
 name = "tomli"
@@ -480,6 +471,7 @@ version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
+    { name = "loguru" },
     { name = "pyaudio" },
     { name = "python-dotenv" },
     { name = "thymia-sentinel" },
@@ -496,9 +488,10 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
+    { name = "loguru", specifier = ">=0.7.3" },
     { name = "pyaudio", specifier = ">=0.2.14" },
     { name = "python-dotenv" },
-    { name = "thymia-sentinel", editable = "../../packages/thymia-sentinel" },
+    { name = "thymia-sentinel", specifier = ">=1.0.0" },
     { name = "websockets", specifier = ">=15.0.1" },
 ]
 
