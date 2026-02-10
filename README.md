@@ -1,189 +1,147 @@
-# Thymia Sentinel Integrations
+# Thymia Sentinel
 
-**Beta Product** - Integration examples for Thymia Sentinel, a real-time voice biomarker and safety monitoring service for voice AI agents.
+**Voice AI safety monitoring through multimodal biomarker analysis.**
 
-## What is Thymia Sentinel?
+[![PyPI version](https://badge.fury.io/py/thymia-sentinel.svg)](https://badge.fury.io/py/thymia-sentinel)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Thymia Sentinel allows you to stream audio from a voice agent conversation to Thymia's servers and receive back:
-
-- **Biomarker scores** - Real-time mental wellness indicators extracted from voice (stress, distress, burnout, fatigue, emotions, etc.)
-- **Policy results** - Configurable analysis outputs like safety assessments, field extraction, or raw biomarker passthrough
-
-This enables voice AI agents to be aware of user wellbeing and adapt their responses accordingly.
-
-## How It Works
+Sentinel streams voice conversations to Thymia's Lyra server for real-time extraction of clinical speech biomarkers, combined with policy-based safety reasoning to detect mental health concerns that text-only systems miss.
 
 ![How Sentinel Works](./assets/diagram.gif)
 
-## Integration Protocol
+## Why Multimodal?
 
-To integrate with Thymia Sentinel, your voice agent needs to:
+Text-only safety moderation has two fundamental failure modes:
 
-### 1. Connect via WebSocket
+| Problem | Text-Only Limitation | Sentinel's Solution |
+|---------|---------------------|---------------------|
+| **False Negatives** | Users minimize distress: *"I'm fine, just tired"* | Voice biomarkers reveal severe depression despite reassuring words |
+| **False Positives** | Innocuous phrases trigger alerts: *"I'm dying of embarrassment"* | Biomarkers confirm no clinical concern, reducing alarm fatigue |
 
-Connect to the Thymia WebSocket server (default: `wss://ws.thymia.ai`).
+Both failures stem from the same limitation: **relying on words without physiological ground truth**. Sentinel performs explicit concordance analysis between text and biomarkers to detect when these signals disagree.
 
-### 2. Send Configuration
+## Installation
 
-Send a CONFIG message as the first message after connecting:
-
-```json
-{
-  "api_key": "your-thymia-api-key",
-  "user_label": "unique-user-id",
-  "date_of_birth": "1990-01-15",
-  "birth_sex": "MALE",
-  "language": "en-GB",
-  "biomarkers": ["helios"],
-  "policies": ["passthrough"],
-  "sample_rate": 16000,
-  "format": "pcm16",
-  "channels": 1,
-  "progress_updates": {
-    "enabled": true,
-    "interval_seconds": 1.0
-  }
-}
+```bash
+pip install thymia-sentinel
 ```
 
-### 3. Stream Audio
+## Quick Start
 
-Send audio as header + binary pairs:
+```python
+from thymia_sentinel import SentinelClient
 
-```json
-{
-  "type": "AUDIO_HEADER",
-  "track": "user",
-  "bytes": 3200,
-  "format": "pcm16",
-  "sample_rate": 16000,
-  "channels": 1
-}
-```
-Followed immediately by binary PCM16 audio data.
+sentinel = SentinelClient(
+    user_label="user-123",
+    policies=["safety"],
+    biomarkers=["helios", "apollo"],
+)
 
-Track can be `"user"` (the human) or `"agent"` (your AI's TTS output).
+@sentinel.on_policy_result
+async def handle_result(result):
+    level = result["result"]["classification"]["level"]
+    if level >= 2:
+        print(f"Elevated risk: level {level}")
+        print(result["result"]["recommended_actions"]["for_agent"])
 
-### 4. Send Transcripts
+@sentinel.on_progress
+async def handle_progress(result):
+    for name, status in result["biomarkers"].items():
+        pct = (status["speech_seconds"] / status["trigger_seconds"]) * 100
+        print(f"{name}: {pct:.0f}%")
 
-Send transcription results as they become available:
+await sentinel.connect()
 
-```json
-{
-  "type": "TRANSCRIPT",
-  "speaker": "user",
-  "text": "I've been feeling quite stressed lately",
-  "is_final": true,
-  "timestamp": 1701234567.89
-}
-```
+# In your voice AI audio loop:
+await sentinel.send_user_audio(audio_bytes)      # PCM16 @ 16kHz
+await sentinel.send_agent_audio(agent_audio)
+await sentinel.send_user_transcript("I'm doing okay")
 
-### 5. Receive Results
-
-The server sends back `POLICY_RESULT` messages containing biomarkers and analysis:
-
-```json
-{
-  "type": "POLICY_RESULT",
-  "policy": "passthrough",
-  "triggered_at_turn": 2,
-  "timestamp": 1701234567.89,
-  "result": {
-    "type": "passthrough",
-    "biomarkers": {
-      "distress": 0.45,
-      "stress": 0.62,
-      "burnout": 0.18,
-      "fatigue": 0.35,
-      "low_self_esteem": 0.25
-    },
-    "turn_count": 2
-  }
-}
+await sentinel.close()
 ```
 
-### 6. Receive Progress Updates (Optional)
+## Risk Classification
 
-If `progress_updates.enabled` is set to `true` in the configuration, the server sends periodic `PROGRESS` messages indicating the status of biomarker processing:
+The safety policy returns a 4-level classification aligned with clinical intervention protocols:
 
-```json
-{
-  "type": "PROGRESS",
-  "timestamp": 1701234567.89,
-  "biomarkers": {
-    "helios": {
-      "speech_seconds": 12.5,
-      "trigger_seconds": 15.0,
-      "processing": false
-    }
-  }
-}
-```
-
-Each biomarker in the `biomarkers` object reports:
-- `speech_seconds`: Amount of user speech collected so far
-- `trigger_seconds`: Speech required before analysis runs
-- `processing`: Whether analysis is currently in progress
-
-**Multiple biomarker runs per call**: Biomarkers run multiple times during a conversation. When `speech_seconds` reaches `trigger_seconds`, analysis is triggered and the counter resets.
-
-Below is an example stream showing this cycle (with `trigger_seconds: 10`):
-
-```
-PROGRESS: helios - 3.2s / 10.0s collected, processing: false
-PROGRESS: helios - 6.5s / 10.0s collected, processing: false
-PROGRESS: helios - 9.8s / 10.0s collected, processing: false
-PROGRESS: helios - 10.0s / 10.0s collected, processing: true   ← Analysis triggered - processing changes to true
-POLICY_RESULT: helios biomarkers received (stress: 0.62, distress: 0.45, ...)
-PROGRESS: helios - 0.0s / 10.0s collected, processing: false   ← Counter reset
-PROGRESS: helios - 4.2s / 10.0s collected, processing: false
-PROGRESS: helios - 7.8s / 10.0s collected, processing: false
-... cycle continues ...
-```
-
-Note this is for illustration only, and assumes a larger `interval_seconds` value than the default of 1.0 seconds.
-
-Progress updates are useful for:
-- Showing users how much speech has been collected
-- Indicating when biomarker analysis is in progress
-- Building progress indicators in your UI
+| Level | Alert | Description |
+|-------|-------|-------------|
+| 0 | `none` | No concern detected |
+| 1 | `monitor` | Mild indicators, continue monitoring |
+| 2 | `professional_referral` | Moderate concern, consider referral |
+| 3 | `crisis` | Crisis level, immediate intervention |
 
 ## Available Biomarkers
 
-| Provider | Biomarkers | Description |
-|----------|------------|-------------|
-| `helios` | distress, stress, burnout, fatigue, low_self_esteem | Wellness indicators (0-1 scale) |
-| `apollo` | depression_probability, anxiety_probability, + 15 symptom scores | Disorder detection |
+| Model | Biomarkers | Description |
+|-------|------------|-------------|
+| `helios` | distress, stress, burnout, fatigue, low_self_esteem | Wellness indicators (0-1) |
+| `apollo` | depression_probability, anxiety_probability + 15 symptom scores | Clinical detection |
+| `psyche` | happy, sad, angry, fearful, surprised, disgusted, neutral | Real-time affect |
 
-## Available Policies
+## Framework Integrations
 
-| Policy | Description | Requires LLM |
-|--------|-------------|--------------|
-| `passthrough` | Raw biomarker scores on each user turn | No |
-| `safety_analysis` | Risk classification with recommended agent actions | Yes |
-| `field_extraction` | Extract structured fields from conversation | Yes |
-| `agent_eval` | Evaluate agent response quality | Yes |
+Plug-and-play examples for popular voice AI frameworks:
 
-## Example Integrations
+| Integration | Features | Guide |
+|-------------|----------|-------|
+| **[LiveKit](./examples/livekit/)** | Automatic RTCTrack audio capture | [Docs](./docs/integrations/livekit.md) |
+| **[Pipecat](./examples/pipecat/)** | FrameProcessor integration | [Docs](./docs/integrations/pipecat.md) |
+| **[VAPI](./examples/vapi_api/)** | WebSocket transport | [Docs](./docs/integrations/vapi.md) |
+| **[Gemini Live](./examples/gemini_live/)** | Google Gemini Live API | [Docs](./docs/integrations/gemini.md) |
 
-| Integration | User Audio | Agent Audio | Multi-Participant | Policy Results |
-|-------------|:----------:|:-----------:|:-----------------:|:--------------:|
-| [LiveKit](./livekit/README.md) | ✅ | ✅ | 🚫 | ✅ |
-| [Gemini Live API](./gemini_live/README.md) | ✅ | ✅ | 🚫 | ✅ |
-| [Pipecat](./pipecat/README.md) | ✅ | ✅ | 🚫 | ✅ |
-| [VAPI](./vapi_api/README.md) | ✅ | ✅ | 🚫 | ✅ |
+## Repository Structure
 
-### Other Frameworks
+```
+thymia-sentinel-integrations/
+├── packages/
+│   └── thymia-sentinel/          # The pip package
+├── examples/
+│   ├── livekit/                  # LiveKit Agents integration
+│   ├── pipecat/                  # Pipecat integration
+│   ├── vapi_api/                 # VAPI WebSocket integration
+│   └── gemini_live/              # Gemini Live API integration
+└── docs/                         # Documentation (MkDocs)
+```
 
-If you're using a different voice agent framework and would like to integrate with Thymia Sentinel, the protocol above describes everything you need. We welcome contributions of new integrations!
+## Documentation
+
+Full documentation is available in the `docs/` directory:
+
+- **[Concepts](./docs/concepts/)** — Why multimodal, architecture, biomarkers, policies
+- **[Getting Started](./docs/getting-started/)** — Installation and quickstart
+- **[Integrations](./docs/integrations/)** — Framework-specific guides
+- **[API Reference](./docs/api/)** — Full API documentation
+
+## Running Examples
+
+```bash
+# Clone the repo
+git clone https://github.com/thymia-ai/thymia-sentinel-integrations.git
+cd thymia-sentinel-integrations
+
+# Choose an example
+cd examples/livekit  # or pipecat, vapi_api, gemini_live
+
+# Copy environment template and add your API keys
+cp .env.example .env.local
+
+# Install dependencies and run
+uv sync
+uv run python src/agent.py
+```
 
 ## Getting Access
 
-Thymia Sentinel is currently in beta. Contact Thymia for API access:
+Sentinel requires an API key from Thymia. [Contact us](mailto:support@thymia.ai) to get access.
 
 - Website: https://thymia.ai
 - API Docs: https://api.thymia.ai/docs
 
+## Contributing
+
+We welcome contributions! If you're using a different voice AI framework, we'd love to see integrations.
+
 ## License
 
-MIT License - see [LICENSE](./LICENSE) for details.
+MIT License — see [LICENSE](./LICENSE) for details.

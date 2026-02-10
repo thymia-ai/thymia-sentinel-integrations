@@ -11,3 +11,9 @@ KMS
 .pytest_cache
 .ruff_cache
 **/venv/
+
+# Build outputs
+site/
+dist/
+build/
+*.whl

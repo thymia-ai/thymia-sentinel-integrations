@@ -1,0 +1,32 @@
+[project]
+name = "thymia-sentinel-workspace"
+version = "0.1.0"
+description = "Development workspace for Thymia Sentinel integrations"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "thymia-sentinel",
+]
+
+[project.optional-dependencies]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+    "mike>=2.0",
+]
+dev = [
+    "black",
+    "ruff",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+    "mike>=2.0",
+    "black",
+    "ruff",
+]
+
+[tool.uv.sources]
+thymia-sentinel = { path = "packages/thymia-sentinel", editable = true }
