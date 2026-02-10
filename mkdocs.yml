@@ -1,0 +1,88 @@
+site_name: Thymia Sentinel
+site_description: Voice AI safety monitoring through multimodal biomarker analysis
+site_url: https://thymia-ai.github.io/thymia-sentinel-integrations
+repo_url: https://github.com/thymia-ai/thymia-sentinel-integrations
+repo_name: thymia-ai/thymia-sentinel-integrations
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+            docstring_style: google
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Concepts:
+    - Why Voice Biomarkers?: concepts/why-multimodal.md
+    - Architecture: concepts/architecture.md
+    - Biomarkers: concepts/biomarkers.md
+    - Policies: concepts/policies.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+  - Integrations:
+    - LiveKit: integrations/livekit.md
+    - Pipecat: integrations/pipecat.md
+    - VAPI: integrations/vapi.md
+    - Gemini Live: integrations/gemini.md
+  - API Reference: api/index.md
+
+extra:
+  version:
+    provider: mike
+    default: latest
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/thymia-ai

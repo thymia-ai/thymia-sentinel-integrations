@@ -1,0 +1,65 @@
+name: Deploy Documentation
+
+on:
+  # Deploy on release
+  release:
+    types: [published]
+
+  # Allow manual deployment
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., 0.2.0, or "dev" for unreleased)'
+        required: true
+        default: 'dev'
+      set_latest:
+        description: 'Set as latest?'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for mike to work with git history
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy docs (release)
+        if: github.event_name == 'release'
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}  # Strip 'v' prefix if present
+          uv run mike deploy --push --update-aliases $VERSION latest
+
+      - name: Deploy docs (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ inputs.set_latest }}" = "true" ]; then
+            uv run mike deploy --push --update-aliases ${{ inputs.version }} latest
+          else
+            uv run mike deploy --push ${{ inputs.version }}
+          fi
+
+      - name: Set default version
+        if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.set_latest)
+        run: |
+          uv run mike set-default --push latest
