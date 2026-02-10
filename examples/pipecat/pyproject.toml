@@ -9,15 +9,13 @@ description = "Pipecat voice AI agent with Thymia Sentinel biomarker monitoring"
 requires-python = ">=3.10"
 
 dependencies = [
-    "thymia-sentinel",
     "pipecat-ai[daily,openai,deepgram,cartesia,silero]>=0.0.50",
     "python-dotenv",
     "fastapi",
     "uvicorn",
+    "loguru>=0.7.3",
+    "thymia-sentinel>=1.0.0",
 ]
-
-[tool.uv.sources]
-thymia-sentinel = { path = "../../packages/thymia-sentinel", editable = true }
 
 [dependency-groups]
 dev = [
