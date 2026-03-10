@@ -218,8 +218,8 @@ async def run():
             language="en-GB",
             sample_rate=SAMPLE_RATE,  # Gemini uses 24kHz
             on_policy_result=handle_policy_result,
-            policies=["passthrough"],  # ["passthrough", "field_extraction", "safety_analysis", "agent_eval"]
-            biomarkers=["helios"],  # ["helios", "apollo"]
+            policies=["demo_wellbeing_awareness"],  # ["demo_wellbeing_awareness", "demo_field_extraction"]
+            biomarkers=["helios"],  # ["helios", "apollo", "psyche"]
             on_progress_result=handle_progress_result,
         )
 

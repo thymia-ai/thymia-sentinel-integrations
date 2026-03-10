@@ -35,7 +35,7 @@ async def main():
     # Initialize Sentinel
     sentinel = SentinelClient(
         user_label="user-123",
-        policies=["safety"],
+        policies=["demo_wellbeing_awareness"],
         on_policy_result=handle_policy_result,
     )
 

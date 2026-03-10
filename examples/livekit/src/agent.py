@@ -158,8 +158,8 @@ async def entrypoint(ctx: JobContext):
         user_label="550e8400-e29b-41d4-a716-446655440000",
         language="en-GB",
         on_policy_result=handle_policy_result,
-        policies=["passthrough"], # ["passthrough", "field_extraction", "safety_analysis", "agent_eval"]
-        biomarkers=["helios"], # ["helios", "apollo"]
+        policies=["demo_wellbeing_awareness"], # ["demo_wellbeing_awareness", "demo_field_extraction"]
+        biomarkers=["helios"], # ["helios", "apollo", "psyche"]
         on_progress_result=handle_progress_result,
     )
 

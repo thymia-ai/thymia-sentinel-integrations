@@ -49,7 +49,7 @@ SAMPLE_RATE = 24000  # Gemini uses 24kHz
 sentinel = SentinelClient(
     user_label="user-123",
     sample_rate=SAMPLE_RATE,  # Match Gemini's rate
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
 )
 
 @sentinel.on_policy_result
@@ -135,7 +135,7 @@ async def apply_action(action: str, session):
 | `date_of_birth` | `str` | `None` | YYYY-MM-DD format (improves accuracy) |
 | `birth_sex` | `str` | `None` | "MALE" or "FEMALE" (improves accuracy) |
 | `sample_rate` | `int` | `16000` | **Set to 24000 for Gemini** |
-| `policies` | `list[str]` | `["passthrough"]` | Policies to run |
+| `policies` | `list[str]` | required | Policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Biomarkers to extract |
 
 ## Gemini Configuration

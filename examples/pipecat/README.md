@@ -86,7 +86,7 @@ class AgentOutputProcessor(FrameProcessor):
 # Initialize
 sentinel = SentinelClient(
     user_label="user-123",
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
 )
 
 @sentinel.on_policy_result
@@ -124,7 +124,7 @@ pipeline = Pipeline([
 | `date_of_birth` | `str` | `None` | YYYY-MM-DD format (improves accuracy) |
 | `birth_sex` | `str` | `None` | "MALE" or "FEMALE" (improves accuracy) |
 | `language` | `str` | `"en-GB"` | Language code |
-| `policies` | `list[str]` | `["passthrough"]` | Policies to run |
+| `policies` | `list[str]` | required | Policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Biomarkers to extract |
 
 Use `@sentinel.on_policy_result` and `@sentinel.on_progress` decorators to register handlers.

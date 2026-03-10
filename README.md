@@ -33,7 +33,7 @@ from thymia_sentinel import SentinelClient
 
 sentinel = SentinelClient(
     user_label="user-123",
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
     biomarkers=["helios", "apollo"],
 )
 
@@ -60,16 +60,16 @@ await sentinel.send_user_transcript("I'm doing okay")
 await sentinel.close()
 ```
 
-## Risk Classification
+## Awareness Levels
 
-The safety policy returns a 4-level classification aligned with clinical intervention protocols:
+The wellbeing awareness policy returns a 4-level classification:
 
 | Level | Alert | Description |
 |-------|-------|-------------|
-| 0 | `none` | No concern detected |
-| 1 | `monitor` | Mild indicators, continue monitoring |
-| 2 | `professional_referral` | Moderate concern, consider referral |
-| 3 | `crisis` | Crisis level, immediate intervention |
+| 0 | `none` | All clear, no concerns |
+| 1 | `aware` | Be attentive, mild indicators |
+| 2 | `supportive` | Be supportive and mindful, moderate indicators |
+| 3 | `mindful` | Be very mindful, notably elevated signals |
 
 ## Available Biomarkers
 

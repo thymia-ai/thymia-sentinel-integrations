@@ -66,7 +66,7 @@ from livekit.plugins import thymia
 
 sentinel = thymia.Sentinel(
     user_label="user-123",
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
     biomarkers=["helios", "apollo"],
 )
 
@@ -102,7 +102,7 @@ The Sentinel automatically captures:
 | `date_of_birth` | `str` | `None` | YYYY-MM-DD format (improves accuracy) |
 | `birth_sex` | `str` | `None` | "MALE" or "FEMALE" (improves accuracy) |
 | `language` | `str` | `"en-GB"` | Language code |
-| `policies` | `list[str]` | `["passthrough"]` | Policies to run |
+| `policies` | `list[str]` | required | Policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Biomarkers to extract |
 | `on_policy_result` | `callable` | `None` | Callback for results |
 | `on_progress_result` | `callable` | `None` | Callback for progress |

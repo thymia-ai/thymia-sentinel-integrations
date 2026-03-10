@@ -21,7 +21,8 @@ async def handle_result(result):
 
 sentinel = SentinelClient(
     user_label="user-123",
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
+    biomarkers=["helios", "apollo"],
     on_policy_result=handle_result,
 )
 
@@ -34,10 +35,10 @@ await sentinel.send_user_transcript("I'm doing okay")
 await sentinel.close()
 ```
 
-## Available Policies
+## Available Demo Policies
 
-- `passthrough`: Returns raw biomarker values
-- `safety`: Full safety analysis with risk classification
+- `demo_wellbeing_awareness`: Wellbeing awareness analysis with risk classification
+- `demo_field_extraction`: Extracts basic user fields (name, age) from conversation
 
 ## Available Biomarkers
 
@@ -63,7 +64,7 @@ from .models import (
     ProgressResult,
 )
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = [
     # Client

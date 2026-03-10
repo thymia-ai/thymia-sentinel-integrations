@@ -24,7 +24,7 @@ class ReasonerClassification(TypedDict):
     """
 
     level: int
-    alert: Literal["none", "monitor", "professional_referral", "crisis"]
+    alert: str
     confidence: Literal["low", "medium", "high"]
 
 
@@ -190,7 +190,7 @@ class PolicyResult(TypedDict, total=False):
 
     Attributes:
         type: Always "POLICY_RESULT"
-        policy: Name of the policy that was executed (e.g., "safety", "passthrough")
+        policy: Name of the policy that was executed (e.g., "demo_wellbeing_awareness", "demo_field_extraction")
         triggered_at_turn: The user turn number that triggered this policy
         timestamp: Unix timestamp when the result was generated
         result: Policy-specific result data (structure varies by policy type)

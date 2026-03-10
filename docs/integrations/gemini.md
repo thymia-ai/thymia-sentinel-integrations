@@ -24,7 +24,7 @@ async def run():
     sentinel = SentinelClient(
         user_label="user-123",
         sample_rate=24000,  # Gemini uses 24kHz
-        policies=["safety"],
+        policies=["demo_wellbeing_awareness"],
         on_policy_result=handle_policy_result,
     )
 

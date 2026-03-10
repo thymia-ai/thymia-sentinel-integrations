@@ -14,7 +14,7 @@ Register handlers using decorators or constructor callbacks:
 ```python
 sentinel = SentinelClient(
     user_label="user-123",
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
 )
 
 # Decorator pattern (recommended)
@@ -50,7 +50,7 @@ The main result type received from the Lyra server.
 ```python
 class PolicyResult(TypedDict, total=False):
     type: Literal["POLICY_RESULT"]
-    policy: str                    # Policy name (e.g., "safety", "passthrough")
+    policy: str                    # Policy name (e.g., "demo_wellbeing_awareness", "demo_field_extraction")
     triggered_at_turn: int         # User turn that triggered this policy
     timestamp: float               # Unix timestamp
     result: dict                   # Policy-specific result data
@@ -72,21 +72,21 @@ class BiomarkerProgress(TypedDict, total=False):
     processing: bool               # Whether analysis is in progress
 ```
 
-### Safety Analysis Types
+### Wellbeing Awareness Analysis Types
 
 ```python
 class ReasonerClassification(TypedDict):
-    level: int                     # Risk level 0-3
-    alert: Literal["none", "monitor", "professional_referral", "crisis"]
+    level: int                     # Awareness level 0-3
+    alert: str
     confidence: Literal["low", "medium", "high"]
 
 class ReasonerRecommendedActions(TypedDict, total=False):
     for_agent: str                 # Guidance for the AI agent
     for_human_reviewer: str | None # Notes for human reviewers
-    urgency: Literal["routine", "within_week", "within_48hrs", "within_24hrs", "immediate"]
+    urgency: Literal["routine", "follow_up", "attentive", "supportive"]
 
 class ReasonerConcordanceAnalysis(TypedDict, total=False):
-    scenario: str                  # minimization, amplification, concordance, mood_not_discussed
+    scenario: str                  # mood_not_discussed, concordance, minimization, amplification
     agreement_level: str           # high, moderate, low, n/a
     mismatch_type: str | None
     mismatch_severity: str         # none, mild, moderate, severe
@@ -161,7 +161,7 @@ Sent immediately after connection:
     "user_label": "user-123",
     "language": "en-GB",
     "biomarkers": ["helios", "apollo"],
-    "policies": ["safety"],
+    "policies": ["demo_wellbeing_awareness"],
     "audio_config": {
         "sample_rate": 16000,
         "format": "pcm16",
@@ -209,7 +209,7 @@ Immediately followed by raw audio bytes.
 ```json
 {
     "type": "POLICY_RESULT",
-    "policy": "safety",
+    "policy": "demo_wellbeing_awareness",
     "triggered_at_turn": 3,
     "timestamp": 1234567890.456,
     "result": {
