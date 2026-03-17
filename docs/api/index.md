@@ -58,7 +58,7 @@ class PolicyResult(TypedDict, total=False):
 ```
 
 !!! note
-    `policy` is the **executor type** (e.g., `"safety_analysis"`), while `policy_name` is the **name of the specific policy** from your org config (e.g., `"student_monitor"`). When multiple policies share the same executor, use `policy_name` to distinguish them.
+    `policy` is the **executor type** (e.g., `"safety_analysis"`), while `policy_name` is the **name of the specific policy** from your org config (e.g., `"demo_wellbeing_awareness"`). When multiple policies share the same executor, use `policy_name` to distinguish them.
 
 ### ProgressResult
 
