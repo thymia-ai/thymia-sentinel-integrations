@@ -95,6 +95,7 @@ class SentinelClient:
             Union[Callable[[ProgressResult], None], Callable[[ProgressResult], Awaitable[None]]]
         ] = None,
         progress_updates_frequency: float = 1.0,
+        custom_policies: Optional[list[dict]] = None,
         sample_rate: int = DEFAULT_SAMPLE_RATE,
         server_url: Optional[str] = None,
         api_key: Optional[str] = None,
@@ -112,6 +113,7 @@ class SentinelClient:
             on_policy_result: Callback for policy results (sync or async)
             on_progress_result: Callback for progress updates (sync or async)
             progress_updates_frequency: How often to receive progress updates in seconds
+            custom_policies: Optional inline policy definitions (requires feature flag on API key)
             sample_rate: Audio sample rate in Hz (default: 16000)
             server_url: WebSocket server URL (default: from THYMIA_SERVER_URL env or wss://ws.thymia.ai)
             api_key: Thymia API key (default: from THYMIA_API_KEY env)
@@ -125,6 +127,7 @@ class SentinelClient:
         self.language = language
         self.policies = policies
         self.biomarkers = biomarkers if biomarkers is not None else ["helios"]
+        self.custom_policies = custom_policies
         self.progress_updates_frequency = progress_updates_frequency
         self.sample_rate = sample_rate
         self.server_url = server_url or os.getenv(
@@ -248,6 +251,8 @@ class SentinelClient:
             config["date_of_birth"] = self.date_of_birth
         if self.birth_sex is not None:
             config["birth_sex"] = self.birth_sex
+        if self.custom_policies is not None:
+            config["custom_policies"] = self.custom_policies
         await self._websocket.send(json.dumps(config))
         logger.info("Sentinel configuration sent")
 
