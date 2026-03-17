@@ -20,9 +20,10 @@ async def main():
     @sentinel.on_policy_result
     async def handle_result(result: PolicyResult):
         policy = result["policy"]
+        policy_name = result.get("policy_name", policy)
         inner = result["result"]
 
-        print(f"Policy '{policy}' triggered at turn {result['triggered_at_turn']}")
+        print(f"Policy '{policy_name}' (executor={policy}) triggered at turn {result['triggered_at_turn']}")
 
         # Handle alerts
         for alert in inner.get("alerts", []):
@@ -130,6 +131,7 @@ Policy results vary by policy type. Here's a general pattern:
 ```python
 async def handle_result(result: PolicyResult):
     policy = result["policy"]
+    policy_name = result.get("policy_name", policy)
     inner = result["result"]
 
     # All policies may include alerts

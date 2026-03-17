@@ -27,7 +27,8 @@ from thymia_sentinel import SentinelClient
 
 async def handle_result(result):
     policy = result["policy"]
-    if policy == "demo_wellbeing_awareness":
+    policy_name = result.get("policy_name", policy)
+    if policy_name == "demo_wellbeing_awareness":
         classification = result["result"]["classification"]
         level = classification["level"]  # 0-3
         alert = classification["alert"]  # none, aware, supportive, mindful

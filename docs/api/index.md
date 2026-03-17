@@ -50,11 +50,15 @@ The main result type received from the Lyra server.
 ```python
 class PolicyResult(TypedDict, total=False):
     type: Literal["POLICY_RESULT"]
-    policy: str                    # Policy name (e.g., "demo_wellbeing_awareness", "demo_field_extraction")
+    policy: str                    # Executor type (e.g., "safety_analysis", "passthrough")
+    policy_name: str               # Policy name (e.g., "demo_wellbeing_awareness", "demo_field_extraction")
     triggered_at_turn: int         # User turn that triggered this policy
     timestamp: float               # Unix timestamp
     result: dict                   # Policy-specific result data
 ```
+
+!!! note
+    `policy` is the **executor type** (e.g., `"safety_analysis"`), while `policy_name` is the **name of the specific policy** from your org config (e.g., `"student_monitor"`). When multiple policies share the same executor, use `policy_name` to distinguish them.
 
 ### ProgressResult
 
@@ -209,7 +213,8 @@ Immediately followed by raw audio bytes.
 ```json
 {
     "type": "POLICY_RESULT",
-    "policy": "demo_wellbeing_awareness",
+    "policy": "safety_analysis",
+    "policy_name": "demo_wellbeing_awareness",
     "triggered_at_turn": 3,
     "timestamp": 1234567890.456,
     "result": {

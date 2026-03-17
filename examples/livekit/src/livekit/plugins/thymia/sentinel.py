@@ -299,8 +299,10 @@ class Sentinel:
 
     def _log_policy_result(self, message: dict):
         """Log policy execution result"""
+        policy = message.get('policy', 'unknown')
+        policy_name = message.get('policy_name', policy)
         logger.info("=" * 60)
-        logger.info(f"POLICY_RESULT [{message.get('policy', 'unknown')}]")
+        logger.info(f"POLICY_RESULT [{policy_name}] (executor={policy})")
         logger.info("=" * 60)
 
         logger.info(f"  turn: {message.get('triggered_at_turn')} | ts: {message.get('timestamp')}")

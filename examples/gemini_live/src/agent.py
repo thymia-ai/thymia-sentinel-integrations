@@ -180,11 +180,12 @@ async def run():
     try:
         # Initialize Sentinel
         async def handle_policy_result(result: PolicyResult):
-            policy_name = result.get('policy', 'unknown')
+            policy = result.get('policy', 'unknown')
+            policy_name = result.get('policy_name', policy)
             inner_result = result.get('result', {})
             result_type = inner_result.get('type', 'unknown')
 
-            logger.info(f"Policy [{policy_name}]: type={result_type}")
+            logger.info(f"Policy [{policy_name}] (executor={policy}): type={result_type}")
 
             # Handle safety policy results
             if result_type == 'safety_analysis':
