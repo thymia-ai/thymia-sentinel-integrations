@@ -240,3 +240,23 @@ sentinel = SentinelClient(
 ```
 
 Each policy triggers independently and you receive separate `POLICY_RESULT` events for each.
+
+### `policy` vs `policy_name`
+
+Every `POLICY_RESULT` event includes two identifying fields:
+
+- **`policy`** — the **executor type** that produced the result (e.g., `"safety_analysis"`, `"passthrough"`)
+- **`policy_name`** — the **name of the specific policy** from your org config (e.g., `"demo_wellbeing_awareness"`, `"demo_field_extraction"`)
+
+Multiple policies can share the same executor. For example, you might have two policies — `"demo_wellbeing_awareness"` and `"demo_student_monitor"` — that both use the `"safety_analysis"` executor with different configuration. Use `policy_name` to distinguish which policy produced each result:
+
+```python
+@sentinel.on_policy_result
+async def handle_result(result: PolicyResult):
+    policy_name = result.get("policy_name", result["policy"])
+
+    if policy_name == "demo_wellbeing_awareness":
+        await handle_wellbeing(result)
+    elif policy_name == "demo_student_monitor":
+        await handle_student_monitor(result)
+```

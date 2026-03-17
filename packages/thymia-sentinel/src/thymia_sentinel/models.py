@@ -190,7 +190,11 @@ class PolicyResult(TypedDict, total=False):
 
     Attributes:
         type: Always "POLICY_RESULT"
-        policy: Name of the policy that was executed (e.g., "demo_wellbeing_awareness", "demo_field_extraction")
+        policy: The executor type that produced this result (e.g., "safety_analysis",
+            "passthrough"). Multiple policies can share the same executor.
+        policy_name: The name of the specific policy from your org config that produced
+            this result (e.g., "demo_wellbeing_awareness", "demo_field_extraction"). Use this to distinguish
+            between policies that share the same executor type.
         triggered_at_turn: The user turn number that triggered this policy
         timestamp: Unix timestamp when the result was generated
         result: Policy-specific result data (structure varies by policy type)
@@ -198,6 +202,7 @@ class PolicyResult(TypedDict, total=False):
 
     type: Literal["POLICY_RESULT"]
     policy: str
+    policy_name: str
     triggered_at_turn: int
     timestamp: float
     result: dict
