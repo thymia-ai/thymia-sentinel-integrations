@@ -27,10 +27,10 @@ from thymia_sentinel import SentinelClient
 
 async def handle_result(result):
     policy = result["policy"]
-    if policy == "safety":
+    if policy == "demo_wellbeing_awareness":
         classification = result["result"]["classification"]
         level = classification["level"]  # 0-3
-        alert = classification["alert"]  # none, monitor, professional_referral, crisis
+        alert = classification["alert"]  # none, aware, supportive, mindful
 
         if level >= 2:
             print(f"Risk level {level}: {alert}")
@@ -38,7 +38,7 @@ async def handle_result(result):
 
 sentinel = SentinelClient(
     user_label="user-123",
-    policies=["safety"],
+    policies=["demo_wellbeing_awareness"],
     biomarkers=["helios", "apollo"],
     on_policy_result=handle_result,
 )
@@ -63,17 +63,17 @@ await sentinel.close()
 | `date_of_birth` | str | None | YYYY-MM-DD format (improves accuracy, imputed from voice if omitted) |
 | `birth_sex` | str | None | "MALE" or "FEMALE" (improves accuracy, imputed from voice if omitted) |
 | `language` | str | "en-GB" | Language code |
-| `policies` | list[str] | ["passthrough"] | Policies to execute |
+| `policies` | list[str] | required | Policies to execute |
 | `biomarkers` | list[str] | ["helios"] | Biomarkers to extract |
 | `sample_rate` | int | 16000 | Audio sample rate in Hz |
 | `on_policy_result` | callable | None | Callback for policy results |
 | `on_progress_result` | callable | None | Callback for progress updates |
 | `api_key` | str | env THYMIA_API_KEY | Your Thymia API key |
 
-## Policies
+## Demo Policies
 
-- **`passthrough`**: Returns raw biomarker values without interpretation
-- **`safety`**: Full safety analysis with 4-level risk classification and recommended actions
+- **`demo_wellbeing_awareness`**: Wellbeing awareness analysis with risk classification and recommended actions
+- **`demo_field_extraction`**: Extracts basic user fields (name, age) from conversation
 
 ## Biomarkers
 
@@ -81,16 +81,16 @@ await sentinel.close()
 - **`apollo`**: Clinical disorder probabilities (depression, anxiety) and symptom-level severities
 - **`psyche`**: Real-time affect detection (happy, sad, angry, fearful, etc.)
 
-## Risk Classification
+## Awareness Levels
 
-The safety policy returns a 4-level classification:
+The wellbeing awareness policy returns a 4-level classification:
 
 | Level | Alert | Description |
 |-------|-------|-------------|
-| 0 | none | No concern detected |
-| 1 | monitor | Mild indicators, continue monitoring |
-| 2 | professional_referral | Moderate concern, consider referral |
-| 3 | crisis | Crisis level, immediate intervention |
+| 0 | none | All clear, no concerns |
+| 1 | aware | Be attentive, mild indicators |
+| 2 | supportive | Be supportive and mindful, moderate indicators |
+| 3 | mindful | Be very mindful, notably elevated signals |
 
 ## Framework Integrations
 

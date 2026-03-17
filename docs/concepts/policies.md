@@ -31,7 +31,7 @@ In your code, you simply reference policies by name:
 
 ```python
 sentinel = SentinelClient(
-    policies=["safety", "engagement"],  # Your configured policies
+    policies=["demo_wellbeing_awareness"],  # Your configured policies
     # ...
 )
 ```
@@ -42,129 +42,147 @@ Thymia provides pre-built policies for common use cases. Custom policies can be 
 
 ---
 
-### safety
+### wellbeing-awareness
 
-**Domains:** Mental Health, LLM Safety, Healthcare
+**Type:** `safety_analysis`
 
-**Biomarkers:** Helios (distress, stress), Apollo (depression, anxiety, symptoms), Psyche
+**Domains:** Mental Health, Conversational AI, Healthcare, Education, Coaching
 
-Mental health risk classification with concordance analysis. Detects when users minimize distress, identifies crisis indicators, and provides guidance for both AI agents and human reviewers.
+**Biomarkers:** Helios (distress, stress, burnout, fatigue, low_self_esteem), Apollo (depression, anxiety, symptoms), Psyche (real-time voice emotions)
+
+Conversational wellbeing awareness system that combines voice biomarkers with conversation context. Performs concordance analysis between what users say and how they sound, detecting minimization, and providing gentle, non-clinical guidance for AI agents.
+
+**Awareness Levels:**
+
+| Level | Alert | Description |
+|-------|-------|-------------|
+| 0 | `none` | All clear, no concerns |
+| 1 | `aware` | Be attentive, mild indicators |
+| 2 | `supportive` | Be supportive and mindful, moderate indicators |
+| 3 | `mindful` | Be very mindful, notably elevated signals |
 
 **Output:**
 ```python
 {
+    "type": "safety_analysis",
     "classification": {
-        "level": 0-3,          # none / monitor / professional_referral / crisis
-        "alert": "monitor",
+        "level": 0-3,          # none / aware / supportive / mindful
+        "alert": "aware",
         "confidence": "high"
     },
-    "concerns": ["elevated distress", "minimization detected"],
+    "concerns": ["slightly elevated stress", "mood not yet discussed"],
     "concordance_analysis": {
-        "scenario": "minimization",  # concordance / minimization / amplification
-        "mismatch_severity": "moderate"
+        "scenario": "mood_not_discussed",  # mood_not_discussed / concordance / minimization / amplification
+        "agreement_level": "n/a",
+        "mismatch_type": "not_yet_discussed",
+        "mismatch_severity": "none"
     },
     "recommended_actions": {
-        "for_agent": "Gently explore mood further...",
-        "for_human_reviewer": "Review for clinical escalation",
-        "urgency": "within_48hrs"
+        "for_agent": "Find a natural moment to ask how they're feeling",
+        "for_human_reviewer": "Brief note for session review",
+        "urgency": "routine"       # routine / follow_up / attentive / supportive
     }
 }
 ```
 
 ---
 
-### tutor-wellbeing
+### extracted-fields
 
-**Domains:** Education, Employee Wellness, HR
+**Type:** `extracted_fields`
 
-**Biomarkers:** Helios (burnout, fatigue, stress), Apollo (depression, anxiety), Psyche
+**Domains:** Any (structured data extraction from conversation)
 
-Monitors tutor/teacher mental state during sessions. Detects burnout risk, emotional labor, and surface acting (performing positivity while exhausted). Generates self-care recommendations and retention insights.
+**Biomarkers:** None required
+
+Extracts basic user fields (name, age) from the conversation in real-time. Each field includes a confidence score and the source utterance it was extracted from.
 
 **Output:**
 ```python
 {
-    "mental_state": {
-        "burnout": 0.62,
-        "fatigue": 0.55,
-        "stress": 0.48,
-        "interpretation": "moderate"
+    "type": "extracted_fields",
+    "fields": {
+        "name": {
+            "value": "Greg",
+            "confidence": 1.0,
+            "source": "User:  My name is Greg."
+        },
+        "age": {
+            "value": None,
+            "confidence": 0.0,
+            "source": None
+        }
     },
-    "surface_acting_detected": True,
-    "surface_acting_rationale": "Bright language but elevated burnout biomarkers",
-    "alerts": [
-        {"type": "burnout_risk", "severity": "moderate", "message": "..."}
-    ],
-    "self_care_recommendations": [
-        {"action": "take_break_after_lesson", "priority": "immediate"},
-        {"action": "pace_schedule", "priority": "soon"}
-    ],
-    "platform_insights": {
-        "retention_risk": "moderate",
-        "support_recommended": True
-    }
+    "notes": "The user explicitly stated their name as Greg. No age information was provided in the conversation."
 }
 ```
 
 ---
 
-### student-learning
+### student-monitor
 
-**Domains:** Education, Tutoring, Language Learning
+**Type:** `safety_analysis`
 
-**Biomarkers:** Helios (stress, fatigue), Apollo (anxiety), Psyche, Focus (when available)
+**Domains:** Education, Tutoring, Online Learning
 
-Detects learning barriers in real-time: foreign language anxiety, cognitive overload, fatigue, frustration. Provides tutor recommendations with specific scripts.
+**Biomarkers:** Helios (stress, fatigue), Apollo (concentration, restlessness, irritability, psychomotor, low_energy), Psyche (neutral, happy, angry)
+
+Classifies student wellness during tutoring sessions using conversation content as the primary signal and voice biomarkers as a secondary signal. Detects off-topic drift, lesson difficulty, and emotional shutdown. Provides tutor recommendations with specific scripts.
+
+Conversation content drives the classification — biomarkers can escalate by one level but never override clear conversational signals.
+
+**Classification Levels:**
+
+| Level | Alert | Description |
+|-------|-------|-------------|
+| 0 | `none` | On track, engaged and on-topic |
+| 1 | `on_track` | Borderline, worth watching |
+| 2 | `check_in` | Check understanding, consider switching approach |
+| 3 | `support_needed` | Acknowledge difficulty, consider a break |
 
 **Output:**
 ```python
 {
-    "learning_state": {
-        "foreign_language_anxiety": 0.58,
-        "cognitive_load": "high",
-        "willingness_to_communicate": 0.35,
-        "self_efficacy": 0.42
+    "type": "safety_analysis",
+    "classification": {
+        "level": 0-3,          # none / on_track / check_in / support_needed
+        "alert": "check_in",
+        "confidence": "high"
     },
-    "alerts": [
-        {"type": "anxiety_high", "severity": "moderate"}
-    ],
+    "biomarker_summary": {
+        "stress": 0.35,
+        "fatigue": 0.32,
+        "concentration": 0.42,
+        "restlessness": 0.25,
+        "irritability": 0.30,
+        "psychomotor": 0.18,
+        "low_energy": 0.28,
+        "neutral": 0.60,
+        "happy": 0.10,
+        "angry": 0.20,
+        "interpretation": "mild"
+    },
     "tutor_recommendations": [
         {
-            "action": "positive_reinforcement",
+            "action": "acknowledge_difficulty",
             "priority": "immediate",
-            "script_suggestion": "You know this! Let's break it down..."
+            "script_suggestion": "That's OK! This is genuinely a tricky topic."
+        },
+        {
+            "action": "slow_down",
+            "priority": "soon",
+            "script_suggestion": "Let's try a different approach..."
         }
-    ]
-}
-```
-
----
-
-### caller-state
-
-**Domains:** Contact Centers, Customer Experience, Sales
-
-**Biomarkers:** Helios (stress, distress), Psyche (anger, fear), Apollo (irritability)
-
-Real-time caller emotional state for contact center applications. Detects frustration, escalation risk, and satisfaction signals.
-
-**Output:**
-```python
-{
-    "caller_state": {
-        "frustration": 0.65,
-        "satisfaction": 0.22,
-        "escalation_risk": "high"
-    },
-    "alerts": [
-        {"type": "escalation_warning", "severity": "high"}
     ],
+    "rationale": "Student has expressed confusion twice and cannot engage with the analogy.",
     "recommended_actions": {
-        "for_agent": "Acknowledge frustration, offer concrete resolution",
-        "transfer_recommended": True
+        "for_agent": "Acknowledge the difficulty, slow down, and try a different approach",
+        "for_human_reviewer": "Student showing difficulty signals, may need alternative explanation"
     }
 }
 ```
+
+**Available tutor actions:** `positive_reinforcement`, `slow_down`, `take_break`, `check_understanding`, `acknowledge_difficulty`, `switch_activity`
 
 ---
 
@@ -216,7 +234,7 @@ Enable multiple policies simultaneously:
 
 ```python
 sentinel = SentinelClient(
-    policies=["safety", "engagement", "passthrough"],
+    policies=["demo_wellbeing_awareness", "demo_field_extraction"],
     # ...
 )
 ```

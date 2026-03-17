@@ -35,7 +35,7 @@ class SentinelClient:
 
         sentinel = SentinelClient(
             user_label="user-123",
-            policies=["safety"],
+            policies=["demo_wellbeing_awareness"],
         )
 
         @sentinel.on_policy_result
@@ -107,7 +107,7 @@ class SentinelClient:
             date_of_birth: Optional date of birth in YYYY-MM-DD format (improves accuracy, imputed from voice if omitted)
             birth_sex: Optional, either "MALE" or "FEMALE" (improves accuracy, imputed from voice if omitted)
             language: Language code (default: "en-GB")
-            policies: List of policies to execute (default: ["passthrough"])
+            policies: List of policies to execute (e.g., ["demo_wellbeing_awareness"])
             biomarkers: List of biomarkers to extract (default: ["helios"])
             on_policy_result: Callback for policy results (sync or async)
             on_progress_result: Callback for progress updates (sync or async)
@@ -123,7 +123,7 @@ class SentinelClient:
         self.date_of_birth = date_of_birth
         self.birth_sex = birth_sex
         self.language = language
-        self.policies = policies if policies is not None else ["passthrough"]
+        self.policies = policies
         self.biomarkers = biomarkers if biomarkers is not None else ["helios"]
         self.progress_updates_frequency = progress_updates_frequency
         self.sample_rate = sample_rate

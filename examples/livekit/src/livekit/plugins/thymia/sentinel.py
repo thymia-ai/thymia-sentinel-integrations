@@ -37,7 +37,7 @@ class Sentinel:
 
         sentinel = thymia.Sentinel(
             user_label="user-123",
-            policies=["safety"],
+            policies=["demo_wellbeing_awareness"],
         )
 
         @sentinel.on_policy_result
@@ -112,7 +112,7 @@ class Sentinel:
         self.date_of_birth = date_of_birth
         self.birth_sex = birth_sex
         self.language = language
-        self.policies = policies if policies is not None else ["passthrough"]
+        self.policies = policies
         self.biomarkers = biomarkers if biomarkers is not None else ["helios"]
         self.progress_updates_frequency = progress_updates_frequency
         self.server_url = server_url or os.getenv(

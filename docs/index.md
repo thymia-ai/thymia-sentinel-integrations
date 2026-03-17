@@ -44,7 +44,7 @@ Policies are configured with Thymia based on your use case. In code, you simply 
 ```python
 sentinel = SentinelClient(
     user_label="user-123",
-    policies=["safety", "engagement"],  # Your configured policies
+    policies=["demo_wellbeing_awareness"],  # Your configured policies
 )
 ```
 
