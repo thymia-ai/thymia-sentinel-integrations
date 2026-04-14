@@ -27,10 +27,19 @@ from livekit.agents import (
     cli,
 )
 
-from livekit.plugins import noise_cancellation, deepgram, rime, openai, thymia
-from tools import get_tools_from_config, AgentConfig
+from livekit.plugins import noise_cancellation, deepgram, speechmatics, rime, openai, thymia
+from tools import get_tools_from_config, AgentConfig, SttProvider
 
 from prompts import SYSTEM_PROMPT, format_action_update
+
+
+def validate_stt_api_key(stt_provider: SttProvider) -> None:
+    """Raise RuntimeError if the required API key for the STT provider is not set."""
+    required_key = f"{stt_provider.value.upper()}_API_KEY"
+    if not os.environ.get(required_key):
+        raise RuntimeError(
+            f"STT provider {stt_provider.value} requires {required_key} to be set"
+        )
 
 
 class SafetyAwareAssistant(Agent):
@@ -79,12 +88,23 @@ async def entrypoint(ctx: JobContext):
     tools = get_tools_from_config(config)
     assistant = SafetyAwareAssistant(config, tools)
 
-    stt_instance = deepgram.STTv2(
-        model="flux-general-en",
-        eager_eot_threshold=0.3,
-        eot_threshold=0.5,
-        eot_timeout_ms=2000,
-    )
+    validate_stt_api_key(config.stt_provider)
+    logger.info(f"Using STT provider: {config.stt_provider.value}")
+
+    if config.stt_provider == SttProvider.SPEECHMATICS:
+        base_lang, *_ = config.language.split("-")
+        stt_instance = speechmatics.STT(
+            language=base_lang,
+            turn_detection_mode=speechmatics.TurnDetectionMode.FIXED,
+            end_of_utterance_silence_trigger=1.5,
+        )
+    else:
+        stt_instance = deepgram.STTv2(
+            model="flux-general-en",
+            eager_eot_threshold=0.3,
+            eot_threshold=0.5,
+            eot_timeout_ms=2000,
+        )
 
     # Change voice settings
     if config.voice:

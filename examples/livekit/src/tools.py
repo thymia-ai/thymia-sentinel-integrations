@@ -1,4 +1,5 @@
 import json
+from enum import Enum
 from loguru import logger
 
 from livekit.agents import function_tool, RunContext, get_job_context, ToolError
@@ -21,11 +22,18 @@ class ToolConfig(BaseModel):
     tool_name: str | None = Field(default=None, alias="toolName")
     temporary_tool: TemporaryTool | None = Field(default=None, alias="temporaryTool")
 
+class SttProvider(str, Enum):
+    DEEPGRAM = "deepgram"
+    SPEECHMATICS = "speechmatics"
+
+
 class AgentConfig(BaseModel):
     system_prompt: str = Field(default="", alias="systemPrompt")
     tools: list[ToolConfig] | None = Field(default=None)
     voice: str = Field(default="")
     temperature: float = Field(default=None)
+    language: str = Field(default="en-GB")
+    stt_provider: SttProvider = Field(default=SttProvider.DEEPGRAM, alias="sttProvider")
 
 @function_tool
 async def hangup(context: RunContext):
