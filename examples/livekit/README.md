@@ -33,7 +33,10 @@ THYMIA_API_KEY=your-thymia-api-key
 
 # AI Services
 OPENAI_API_KEY=your-openai-key
-DEEPGRAM_API_KEY=your-deepgram-key
+
+# STT Provider (choose one — Deepgram is default)
+DEEPGRAM_API_KEY=your-deepgram-key        # Required if using Deepgram (default)
+SPEECHMATICS_API_KEY=your-speechmatics-key # Required if using Speechmatics
 ```
 
 ### 3. Run the Agent
@@ -104,8 +107,26 @@ The Sentinel automatically captures:
 | `language` | `str` | `"en-GB"` | Language code |
 | `policies` | `list[str]` | required | Policies to run |
 | `biomarkers` | `list[str]` | `["helios"]` | Biomarkers to extract |
+| `stt_provider` | `str` | `"deepgram"` | STT provider: `"deepgram"` or `"speechmatics"` |
 | `on_policy_result` | `callable` | `None` | Callback for results |
 | `on_progress_result` | `callable` | `None` | Callback for progress |
+
+## STT Provider
+
+The agent supports two STT providers, selectable via the `sttProvider` field in job metadata:
+
+| Provider | Value | Env Variable | Turn Detection |
+|----------|-------|--------------|----------------|
+| Deepgram | `deepgram` (default) | `DEEPGRAM_API_KEY` | Confidence-based end-of-turn |
+| Speechmatics | `speechmatics` | `SPEECHMATICS_API_KEY` | Fixed silence-based (1.5s) |
+
+To use Speechmatics, pass it in the dispatch metadata:
+
+```bash
+lk dispatch create --api-key $LIVEKIT_API_KEY --api-secret $LIVEKIT_API_SECRET \
+    --url $LIVEKIT_URL --room test-room --agent-name test-agent \
+    --metadata '{"sttProvider": "speechmatics"}'
+```
 
 ## Publishing Results to UI
 
