@@ -223,7 +223,11 @@ class SentinelClient:
         logger.info(f"Monitoring user: {self.user_label}")
         logger.info(f"Connecting to: {self.server_url}")
 
-        self._websocket = await websockets.connect(self.server_url, max_size=None)
+        self._websocket = await websockets.connect(
+            self.server_url,
+            max_size=None,
+            additional_headers={"X-Api-Key": self.api_key},
+        )
         logger.info("Connected to Thymia server")
 
         # Enable progress updates if any handlers are registered
@@ -231,7 +235,6 @@ class SentinelClient:
 
         # Send configuration
         config = {
-            "api_key": self.api_key,
             "language": self.language,
             "biomarkers": self.biomarkers,
             "policies": self.policies,

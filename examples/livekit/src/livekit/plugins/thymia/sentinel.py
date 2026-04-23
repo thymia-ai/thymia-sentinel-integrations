@@ -363,16 +363,19 @@ class Sentinel:
             websocket = None
 
             try:
-                websocket = await websockets.connect(self.server_url, max_size=None)
+                websocket = await websockets.connect(
+                    self.server_url,
+                    max_size=None,
+                    additional_headers={"X-Api-Key": self.thymia_api_key},
+                )
                 self._websocket = websocket
                 logger.info("Connected to Thymia server")
 
                 # Enable progress updates if any handlers are registered
                 progress_enabled = len(self._progress_handlers) > 0
 
-                # Send configuration with API key
+                # Send configuration
                 config = {
-                    'api_key': self.thymia_api_key,
                     'language': self.language,
                     'biomarkers': self.biomarkers,
                     'policies': self.policies,
