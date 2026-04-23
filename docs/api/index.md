@@ -155,13 +155,16 @@ class ReasonerBiomarkerSummary(BaseModel):
 
 ### WebSocket Messages
 
+#### Authentication
+
+The API key is sent as an `X-Api-Key` HTTP header on the WebSocket upgrade request. The `SentinelClient` handles this automatically when you provide the `api_key` parameter or `THYMIA_API_KEY` environment variable.
+
 #### Configuration (Client → Server)
 
 Sent immediately after connection:
 
 ```json
 {
-    "api_key": "your-api-key",
     "user_label": "user-123",
     "language": "en-GB",
     "biomarkers": ["helios", "apollo"],
