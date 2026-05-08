@@ -1,3 +1,5 @@
+![Thymia Sentinel](./assets/documentation-sentinel-banner.webp)
+
 # Thymia Sentinel
 
 **Voice AI safety monitoring through multimodal biomarker analysis.**
