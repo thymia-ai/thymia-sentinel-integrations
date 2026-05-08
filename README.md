@@ -1,8 +1,10 @@
-![Thymia Sentinel](./assets/documentation-sentinel-banner.webp)
+
 
 # Thymia Sentinel
 
 **Voice AI safety monitoring through multimodal biomarker analysis.**
+
+![Thymia Sentinel](./assets/documentation-sentinel-banner.webp)
 
 [![PyPI version](https://badge.fury.io/py/thymia-sentinel.svg)](https://badge.fury.io/py/thymia-sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
