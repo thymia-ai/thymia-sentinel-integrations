@@ -91,6 +91,7 @@ Plug-and-play examples for popular voice AI frameworks:
 | **[Pipecat](./examples/pipecat/)** | FrameProcessor integration | [Docs](./docs/integrations/pipecat.md) |
 | **[VAPI](./examples/vapi_api/)** | WebSocket transport | [Docs](./docs/integrations/vapi.md) |
 | **[Gemini Live](./examples/gemini_live/)** | Google Gemini Live API | [Docs](./docs/integrations/gemini.md) |
+| **[OpenAI Realtime](./examples/openai_realtime/)** | OpenAI Realtime API (`gpt-realtime-2`) | [Docs](./docs/integrations/openai-realtime.md) |
 
 ## Repository Structure
 
@@ -102,7 +103,8 @@ thymia-sentinel-integrations/
 │   ├── livekit/                  # LiveKit Agents integration
 │   ├── pipecat/                  # Pipecat integration
 │   ├── vapi_api/                 # VAPI WebSocket integration
-│   └── gemini_live/              # Gemini Live API integration
+│   ├── gemini_live/              # Gemini Live API integration
+│   └── openai_realtime/          # OpenAI Realtime API integration
 └── docs/                         # Documentation (MkDocs)
 ```
 
