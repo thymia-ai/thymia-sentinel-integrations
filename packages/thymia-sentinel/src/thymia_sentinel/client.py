@@ -11,12 +11,15 @@ import json
 import os
 import time
 import traceback
+from importlib.metadata import version as _pkg_version
 from typing import Optional, Callable, Union, Awaitable, TypeVar
 
 from loguru import logger
 import websockets
 
 from .models import PolicyResult, ProgressResult
+
+_SDK_USER_AGENT = f"thymia-sentinel-python/{_pkg_version('thymia-sentinel')}"
 
 # Type variable for decorator return type preservation
 F = TypeVar("F", bound=Callable)
@@ -227,6 +230,7 @@ class SentinelClient:
             self.server_url,
             max_size=None,
             additional_headers={"X-Api-Key": self.api_key},
+            user_agent_header=_SDK_USER_AGENT,
         )
         logger.info("Connected to Thymia server")
 
