@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.10"
 
 [[package]]
@@ -905,7 +905,7 @@ wheels = [
 
 [[package]]
 name = "thymia-sentinel"
-version = "1.2.0"
+version = "1.2.1"
 source = { editable = "packages/thymia-sentinel" }
 dependencies = [
     { name = "loguru" },
